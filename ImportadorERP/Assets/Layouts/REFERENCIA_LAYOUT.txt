@@ -1,10 +1,10 @@
 001 Tipo da linha (001) - C
 002 Coligada  (005) -  00001
+007 Código de Cliente/Fornecedor  (025) - 00.000.000/3829-65
+032 Nome Fantasia (060) -  BANCO DO BRASIL SA
 092 Nome (060) - BANCO DO BRASIL SA
 152 CNPJ/CPF (020) - 00.000.000/3829-65
 172 Inscrição Estadual (020) - Espaços 
-007 Código de Cliente/Fornecedor  (025) - 00.000.000/3829-65
-032 Nome Fantasia (060) -  BANCO DO BRASIL SA
 192 Cliente ou Fornecedor (005) - 00001
 197 Não Utilizado (Espaços)  (040) - Avenida São José                     SN ????
 237 Número (008) - Espaços ?????

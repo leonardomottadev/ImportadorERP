@@ -1,33 +1,34 @@
 ﻿using ImportadorERP;
+using System.Diagnostics;;
 
 Console.WriteLine("Início");
 
-// Importar dados
+// Importar dados + cabeçalhos
 ImportModel importModel = Importer.Import();
 
-// obter o Layout do cliente
-Record[] layouts = LayoutManager.GetCompleteClientLayout();
+// obter os campos do layout do cliente
+LayoutFieldData[] layouts = LayoutManager.GetCompleteClientLayout();
 
 // Associar títulos do layout com cabeçalhos de importação
-List<Record> records = layouts.Select(record => record).ToList();
+List<LayoutFieldData> layoutFieldDataList = layouts.Select(record => record).ToList();
 List<(string LayoutTitle, string ImportHeader)> title_header_association = new List<(string, string)>
 {
     ( "TIPO_DE_LINHA", "" ),
     ( "COLIGADA", "" ),
-    ( "CODIGO_CLIENTE_FORNECEDOR", "" ),
-    ( "NOME_FANTASIA", "" ),
-    ( "NOME", "" ),
-    ( "CNPJ_CPF", "" ),
+    ( "CODIGO_CLIENTE_FORNECEDOR", "CNPJ" ),
+    ( "NOME_FANTASIA", "Nome" ),
+    ( "NOME", "Nome" ),
+    ( "CNPJ_CPF", "CNPJ" ),
     ( "INSCRICAO_ESTADUAL", "" ),
     ( "CLIENTE_FORNECEDOR", "" ),
-    ( "NAO_UTILIZADO_1", "" ),
-    ( "NUMERO", "" ),
-    ( "COMPLEMENTO", "" ),
+    ( "NAO_UTILIZADO_1", "Endereço comercial" ),
+    ( "NUMERO", "Número do endereço comercial" ),
+    ( "COMPLEMENTO", "Complemento comercial" ),
     ( "NAO_UTILIZADO_2", "" ),
     ( "NAO_UTILIZADO_3", "" ),
-    ( "ESTADO", "" ),
-    ( "CEP", "" ),
-    ( "TELEFONE", "" ),
+    ( "ESTADO", "UF comercial " ),
+    ( "CEP", "CEP comercial" ),
+    ( "TELEFONE", "Telefone residencial" ),
     ( "NAO_UTILIZADO_4", "" ),
     ( "NUMERO_PAGAMENTO", "" ),
     ( "COMPLEMENTO_PAGAMENTO", "" ),
@@ -46,7 +47,7 @@ List<(string LayoutTitle, string ImportHeader)> title_header_association = new L
     ( "TELEFONE_DE_ENTREGA", "" ),
     ( "FAX", "" ),
     ( "CELULAR", "" ),
-    ( "EMAIL", "" ),
+    ( "EMAIL", "E-mail" ),
     ( "CONTATO", "" ),
     ( "TIPO_DE_CLIENTE", "" ),
     ( "ATIVO", "" ),
@@ -128,11 +129,11 @@ List<(string LayoutTitle, string ImportHeader)> title_header_association = new L
     ( "DATA_NASCIMENTO", "" ),
     ( "DESATIVAR_DADOS_BANCARIOS_CLI_FOR", "" ),
     ( "INSCRICAO_ESTADUAL_ST_DO_FORNEDOR_EM_MG", "" ),
-    ( "BAIRRO", "" ),
+    ( "BAIRRO", "Bairro comercial" ),
     ( "BAIRRO_DE_ENTREGA", "" ),
     ( "BAIRRO_DE_PAGAMENTO", "" ),
     ( "RAMO_DE_ATIVIDADE", "" ),
-    ( "RUA", "" ),
+    ( "RUA", "Endereço comercial" ),
     ( "RUA_DE_PAGAMENTO", "" ),
     ( "RUA_DE_ENTREGA", "" ),
     ( "CODIGO_PAGAMENTO_GPS", "" ),
@@ -149,17 +150,83 @@ List<(string LayoutTitle, string ImportHeader)> title_header_association = new L
     ( "INDICADOR_NATUREZA_RETENCAO_NA_FONTE", "" )
 };
 
-foreach (var item in title_header_association)
+int maxDataSize = 0;
+
+// Salvando dados lidos para cada campo de layout
+foreach (var (LayoutTitle, ImportHeader) in title_header_association)
 {
-    Record? record = (records.Where(r => r.Title == item.LayoutTitle)).FirstOrDefault();
-    if (record != null)
+    if (ImportHeader != null && ImportHeader.Length > 0)
     {
-        record.Header= item.ImportHeader;
+        LayoutFieldData? layoutField = (layoutFieldDataList.Where(l => l.Title == LayoutTitle)).FirstOrDefault();
+        if (layoutField != null)
+        {
+            layoutField.Header = ImportHeader;
+            int columnIndex = importModel.GetHeaderColumnIndex(ImportHeader);
+            var columnData = importModel.GetDataByColumnIndex(columnIndex);
+
+            layoutFieldDataList.Where(l => l.Title == LayoutTitle).First().Data = columnData;
+            if (columnData.Length > maxDataSize)
+            {
+                maxDataSize = columnData.Length;
+            }
+        }
     }
 }
 
-// Converter para o layout
+Console.WriteLine("Tamanho dos dados: " + maxDataSize);
+
+// Percorre linhas
+string dataLine = "";
+string newData = "";
+try
+{
+    for (int row = 1; row < maxDataSize; row++)
+    {
+        dataLine += "C";
+        foreach (var layoutField in layoutFieldDataList)
+        {
+            newData = "";
+            if (layoutField.Data != null && layoutField.Data.Length >= row)
+            {
+                newData = ClientLayout.GetTXTData(layoutField.Data[row], layoutField.Size, layoutField.Format);
+            }
+            else
+            {
+                newData = ClientLayout.GetTXTData(System.String.Empty, layoutField.Size, layoutField.Format);
+            }
+
+            switch (layoutField.Title)
+            {
+                case "TIPO_DE_LINHA":
+                    break;
+                case "COLIGADA":
+                    break;
+                case "CLIENTE_FORNECEDOR":
+                    break;
+                case "PESSOA_FISICA_OU_JURIDICA":
+                    break;
+                case "CODIGO_DE_MUNICIPIO":
+                    break;
+                case "CONTRIBUINTE_ISS":
+                    break;
+                case "OPTANTE_PELO_SIMPLES":
+                    break;
+            }
+
+            dataLine += newData;
+        }
+        dataLine += Environment.NewLine;
+    }
+} catch(Exception ex)
+{
+    Console.WriteLine("Erro: " + ex.Message);
+}
+
+Console.WriteLine("Salvando arquivo .txt");
 
 // Salvar em um novo arquivo .txt
+Exporter.WriteTxt(dataLine);
+
+Console.WriteLine("Fim da execução");
 
 Console.ReadKey();

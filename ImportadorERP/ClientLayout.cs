@@ -155,7 +155,7 @@ namespace ImportadorERP
         public const int CNPJ_CPF_TAM = 20;
         public const int INSCRICAO_ESTADUAL_TAM = 20;
         public const int CLIENTE_FORNECEDOR_TAM = 5;
-        public const int NAO_UTILIZADO_1_TAM = 197;
+        public const int NAO_UTILIZADO_1_TAM = 40;
         public const int NUMERO_TAM = 8;
         public const int COMPLEMENTO_TAM = 20;
         public const int NAO_UTILIZADO_2_TAM = 20;
@@ -209,7 +209,7 @@ namespace ImportadorERP
         public const int DATA_INICIO_ATIVIDADES_TAM = 10;
         public const int PATRIMONIO_TAM = 10;
         public const int NUMERO_DE_FUNCIONARIOS_TAM = 10;
-        public const int NAO_UTILIZADO_17_TAM = 94; // Dúvida
+        public const int NAO_UTILIZADO_17_TAM = 94;
         public const int COLIGADA_TIPO_DE_CLIENTE_FORNECEDOR_TAM = 5;
         public const int FAX_DEDICADO_TAM = 5;
         public const int NAO_UTILIZADO_18_TAM = 5;
@@ -238,7 +238,7 @@ namespace ImportadorERP
         public const int NUMERO_DE_DEPENDENTES_TAM = 10;
         public const int EMPRESA_QUE_A_PESSOA_TRABALHA_TAM = 60;
         public const int ESTADO_CIVIL_TAM = 1;
-        public const int PRODUTOR_RURAL_TAM = 14;
+        public const int PRODUTOR_RURAL_TAM = 1;
         public const int INSCRICAO_NO_SUFRAMA_TAM = 14;
         public const int CONTRIBUINTE_ICMS_TAM = 1;
         public const int ORGAO_PUBLICO_TAM = 5;
@@ -283,7 +283,7 @@ namespace ImportadorERP
         public const int INDICADOR_NATUREZA_RETENCAO_NA_FONTE_TAM = 5;
         #endregion
 
-        #region Sizes
+        #region Formats
         public const string TIPO_DE_LINHA_FORMATO = "F";
         public const string COLIGADA_FORMATO = "N";
         public const string CODIGO_CLIENTE_FORNECEDOR_FORMATO = "A";
@@ -423,26 +423,52 @@ namespace ImportadorERP
         public static string GetTXTData(string data, int size, string format)
         {
             string txtData = "";
+            string zeroes = "";
+            string emptySpaces = "";
+
+
+            if (data == null)
+            {
+                data = "";
+            }
+
+            if(data.Length > size)
+            {
+                data = data.Substring(0, size);
+            }
+
             switch (format)
             {
+                // N = Campo numérico, alinhado à direita com zeros à esquerda.
                 case "N":
-                    // N = Campo numérico, alinhado à direita com zeros à esquerda.
-                    var zeroes = new string('0', size - data.Length);
+                    if (size > data.Length) 
+                    {
+                        zeroes = new string('0', size - data.Length);
+                    }
                     txtData = zeroes + data;
                     break;
+                // A = Campo alfanumérico, alinhado à esquerda com espaços à direita.
                 case "A":
-                    // A = Campo alfanumérico, alinhado à esquerda com espaços à direita.
-                    var emptySpaces = new string(' ', size - data.Length);
+                    if (size > data.Length) 
+                    {
+                        emptySpaces = new string(' ', size - data.Length);
+                    }
                     txtData = data + emptySpaces;
                     break;
+                // VF = Valor Financeiro, campo numérico, alinhado à direita com zeros à esquerda e com um ponto (.) ou vírgula (,) como separador decimal
                 case "VF":
-                    // VF = Valor Financeiro, campo numérico, alinhado à direita com zeros à esquerda e com um ponto (.) ou vírgula (,) como separador decimal
+                    if (size > data.Length)
+                    {
+                        zeroes = new string('0', size - data.Length);
+                    }
+                    txtData = zeroes + data;
                     break;
+                // Data = Campo alfanumérico, no formato DD/MM/AAAA ou DDMMAAAA.
                 case "Data":
-                    // Data = Campo alfanumérico, no formato DD/MM/AAAA ou DDMMAAAA.
+                    txtData = data;
                     break;
+                // NU = Não Utilizado, preencher com espaços.
                 case "NU":
-                    // NU = Não Utilizado, preencher com espaços.
                     txtData = new string(' ', size);
                     break;
                 default:
