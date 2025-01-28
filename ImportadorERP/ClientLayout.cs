@@ -426,7 +426,6 @@ namespace ImportadorERP
             string zeroes = "";
             string emptySpaces = "";
 
-
             if (data == null)
             {
                 data = "";
@@ -465,7 +464,7 @@ namespace ImportadorERP
                     break;
                 // Data = Campo alfanumérico, no formato DD/MM/AAAA ou DDMMAAAA.
                 case "Data":
-                    txtData = data;
+                    txtData = new string(' ', size);
                     break;
                 // NU = Não Utilizado, preencher com espaços.
                 case "NU":
