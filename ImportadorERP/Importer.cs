@@ -1,19 +1,13 @@
-﻿using Microsoft.Office.Interop.Excel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ImportadorERP
 {
     public static class Importer
     {
-        public static ImportModel Import()
+        public static ImportModel Import(string fileName)
         {
             Excel.Application excelApp = new Excel.Application();
-            string directory = $"{Environment.CurrentDirectory}/dados/dados.xlsx";
+            string directory = $"{Environment.CurrentDirectory}/dados/{fileName}";
             ImportModel model = new();
             try
             {

@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ImportadorERP
+﻿namespace ImportadorERP
 {
     public static class Exporter
     {
-        public static bool? WriteTxt(string text)
+        public static bool? WriteTxt(string filename, string text)
         {
             try
             {
                 DateTime now = DateTime.Now;
                 string date = now.ToString("yyyyMMdd_HHmmss");
 
-                string filePath = $"{Environment.CurrentDirectory}/dados/output_{date}.txt";
+                string filePath = $"{Environment.CurrentDirectory}/dados/{filename}_output_{date}.txt";
 
                 using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {

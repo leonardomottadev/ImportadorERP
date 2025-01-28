@@ -1,13 +1,13 @@
 ﻿namespace ImportadorERP
 {
-    public static class ClientTask
+    public class SupplierTask
     {
         public static void Run()
         {
             Console.WriteLine("Início - Clientes");
 
             // Importar dados + cabeçalhos
-            ImportModel importModel = Importer.Import("dados.xlsx");
+            ImportModel importModel = Importer.Import("relatorio_fornecedores.xls");
 
             // obter os campos do layout do cliente
             LayoutFieldData[] layouts = LayoutManager.GetCompleteClientLayout();
@@ -229,7 +229,7 @@
             Console.WriteLine("Salvando arquivo .txt");
 
             // Salvar em um novo arquivo .txt
-            Exporter.WriteTxt("cliente", dataLine);
+            Exporter.WriteTxt("fornecedor", dataLine);
 
             Console.WriteLine("Fim da execução - Clientes");
         }
