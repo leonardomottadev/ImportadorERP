@@ -2,12 +2,15 @@
 {
     public static class ClientTask
     {
+        private static readonly string[] SEPARATOR = [" - "];
+        private static readonly int MAX_ROWS_READ = 20;
+
         public static void Run()
         {
             Console.WriteLine("Início - Clientes");
 
             // Importar dados + cabeçalhos
-            ImportModel importModel = Importer.Import("dados.xlsx");
+            ImportModel importModel = Importer.Import("relatorio_clientes.xlsx", MAX_ROWS_READ);
 
             // obter os campos do layout do cliente
             LayoutFieldData[] layouts = LayoutManager.GetCompleteClientLayout();
@@ -189,7 +192,16 @@
                     foreach (var layoutField in layoutFieldDataList)
                     {
                         newData = "";
-                        if (layoutField.Data != null && layoutField.Data.Length >= row)
+
+                        if (layoutField.Title == "CLIENTE_FORNECEDOR")
+                        {
+                            newData = "00001";
+                        }
+                        else if(layoutField.Title == "PESSOA_FISICA_OU_JURIDICA")
+                        {
+                            newData = "J";
+                        }
+                        else if (layoutField.Data != null && layoutField.Data.Length >= row)
                         {
                             newData = ClientLayout.GetTXTData(layoutField.Data[row], layoutField.Size, layoutField.Format);
                         }
@@ -197,25 +209,6 @@
                         {
                             newData = ClientLayout.GetTXTData(System.String.Empty, layoutField.Size, layoutField.Format);
                         }
-
-                        switch (layoutField.Title)
-                        {
-                            case "TIPO_DE_LINHA":
-                                break;
-                            case "COLIGADA":
-                                break;
-                            case "CLIENTE_FORNECEDOR":
-                                break;
-                            case "PESSOA_FISICA_OU_JURIDICA":
-                                break;
-                            case "CODIGO_DE_MUNICIPIO":
-                                break;
-                            case "CONTRIBUINTE_ISS":
-                                break;
-                            case "OPTANTE_PELO_SIMPLES":
-                                break;
-                        }
-
                         dataLine += newData;
                     }
                     dataLine += Environment.NewLine;
@@ -229,7 +222,7 @@
             Console.WriteLine("Salvando arquivo .txt");
 
             // Salvar em um novo arquivo .txt
-            Exporter.WriteTxt("cliente", dataLine);
+            Exporter.WriteTxt($"{MAX_ROWS_READ}_clientes", dataLine);
 
             Console.WriteLine("Fim da execução - Clientes");
         }

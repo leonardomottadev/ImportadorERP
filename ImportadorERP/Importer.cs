@@ -4,7 +4,7 @@ namespace ImportadorERP
 {
     public static class Importer
     {
-        public static ImportModel Import(string fileName)
+        public static ImportModel Import(string fileName, int maxReads = 0)
         {
             Excel.Application excelApp = new Excel.Application();
             string directory = $"{Environment.CurrentDirectory}/dados/{fileName}";
@@ -18,6 +18,11 @@ namespace ImportadorERP
 
                 int totalRows = usedRange.Rows.Count; // Total de linhas na planilha
                 int totalColumns = usedRange.Columns.Count; // Total de colunas na planilha
+
+                if (maxReads > 0 && totalRows > maxReads)
+                {
+                    totalRows = maxReads;
+                }
 
                 string[,] data = new string[totalColumns, totalRows];
                 string[] header = new string[totalColumns];

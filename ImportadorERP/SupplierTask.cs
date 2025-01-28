@@ -1,13 +1,18 @@
-﻿namespace ImportadorERP
+﻿using System.Security.Cryptography.X509Certificates;
+
+namespace ImportadorERP
 {
-    public class SupplierTask
+    public static class SupplierTask
     {
+        private static readonly string[] SEPARATOR = [" - "];
+        private static readonly int MAX_ROWS_READ = 20;
+
         public static void Run()
         {
-            Console.WriteLine("Início - Clientes");
+            Console.WriteLine("Início - Fornecedores");
 
             // Importar dados + cabeçalhos
-            ImportModel importModel = Importer.Import("relatorio_fornecedores.xls");
+            ImportModel importModel = Importer.Import("relatorio_fornecedores.xls", MAX_ROWS_READ);
 
             // obter os campos do layout do cliente
             LayoutFieldData[] layouts = LayoutManager.GetCompleteClientLayout();
@@ -18,20 +23,20 @@
             {
                 ( "TIPO_DE_LINHA", "" ),
                 ( "COLIGADA", "" ),
-                ( "CODIGO_CLIENTE_FORNECEDOR", "CNPJ" ),
-                ( "NOME_FANTASIA", "Nome" ),
-                ( "NOME", "Nome" ),
-                ( "CNPJ_CPF", "CNPJ" ),
+                ( "CODIGO_CLIENTE_FORNECEDOR", "CNPJ/CPF" ),
+                ( "NOME_FANTASIA", "Credor" ),
+                ( "NOME", "Credor" ),
+                ( "CNPJ_CPF", "CNPJ/CPF" ),
                 ( "INSCRICAO_ESTADUAL", "" ),
                 ( "CLIENTE_FORNECEDOR", "" ),
-                ( "NAO_UTILIZADO_1", "Endereço comercial" ),
-                ( "NUMERO", "Número do endereço comercial" ),
-                ( "COMPLEMENTO", "Complemento comercial" ),
+                ( "NAO_UTILIZADO_1", "Endereço" ),
+                ( "NUMERO", "Endereço" ),
+                ( "COMPLEMENTO", "Endereço" ),
                 ( "NAO_UTILIZADO_2", "" ),
                 ( "NAO_UTILIZADO_3", "" ),
-                ( "ESTADO", "UF comercial " ),
-                ( "CEP", "CEP comercial" ),
-                ( "TELEFONE", "Telefone residencial" ),
+                ( "ESTADO", "Endereço" ),
+                ( "CEP", "CEP" ),
+                ( "TELEFONE", "Telefone" ),
                 ( "NAO_UTILIZADO_4", "" ),
                 ( "NUMERO_PAGAMENTO", "" ),
                 ( "COMPLEMENTO_PAGAMENTO", "" ),
@@ -50,9 +55,9 @@
                 ( "TELEFONE_DE_ENTREGA", "" ),
                 ( "FAX", "" ),
                 ( "CELULAR", "" ),
-                ( "EMAIL", "E-mail" ),
+                ( "EMAIL", "" ),
                 ( "CONTATO", "" ),
-                ( "TIPO_DE_CLIENTE", "Tipo cliente" ),
+                ( "TIPO_DE_CLIENTE", "" ),
                 ( "ATIVO", "" ),
                 ( "LIMITE_DE_CREDITO", "" ),
                 ( "NAO_UTILIZADO_8", "" ),
@@ -132,11 +137,11 @@
                 ( "DATA_NASCIMENTO", "" ),
                 ( "DESATIVAR_DADOS_BANCARIOS_CLI_FOR", "" ),
                 ( "INSCRICAO_ESTADUAL_ST_DO_FORNEDOR_EM_MG", "" ),
-                ( "BAIRRO", "Bairro comercial" ),
+                ( "BAIRRO", "Endereço" ),
                 ( "BAIRRO_DE_ENTREGA", "" ),
                 ( "BAIRRO_DE_PAGAMENTO", "" ),
                 ( "RAMO_DE_ATIVIDADE", "" ),
-                ( "RUA", "Endereço comercial" ),
+                ( "RUA", "Endereço" ),
                 ( "RUA_DE_PAGAMENTO", "" ),
                 ( "RUA_DE_ENTREGA", "" ),
                 ( "CODIGO_PAGAMENTO_GPS", "" ),
@@ -189,31 +194,116 @@
                     foreach (var layoutField in layoutFieldDataList)
                     {
                         newData = "";
-                        if (layoutField.Data != null && layoutField.Data.Length >= row)
+
+                        if (layoutField.Title == "CLIENTE_FORNECEDOR")
                         {
-                            newData = ClientLayout.GetTXTData(layoutField.Data[row], layoutField.Size, layoutField.Format);
+                            newData = "00002";
+                        }
+                        else if (layoutField.Title == "PESSOA_FISICA_OU_JURIDICA")
+                        {
+                            newData = "J";
+                        }                        
+                        else if (layoutField.Data != null && layoutField.Data.Length >= row)
+                        {
+
+                            if (layoutField.Title == "NOME" || layoutField.Title == "NOME_FANTASIA")
+                            {
+                                try
+                                {
+                                    string[] nome_credor = layoutField.Data[row].Split(SEPARATOR, StringSplitOptions.None);
+                                    newData = ClientLayout.GetTXTData(nome_credor[1], layoutField.Size, layoutField.Format);
+                                } 
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"ERRO: {ex.Message}");
+                                    newData = ClientLayout.GetTXTData(layoutField.Data[row], layoutField.Size, layoutField.Format);
+                                }
+                            }
+                            else if(layoutField.Title == "NUMERO" || layoutField.Title == "COMPLEMENTO" || layoutField.Title == "BAIRRO" || layoutField.Title == "RUA" || layoutField.Title == "ESTADO")
+                            {
+                                try
+                                {
+                                    string addressData = "";
+
+                                    if (layoutField.Data[row].Length < 30)
+                                    {
+                                        string[] address = layoutField.Data[row].Split(SEPARATOR, StringSplitOptions.None);
+
+                                        switch (layoutField.Title)
+                                        {
+                                            case "ESTADO":
+                                                if (address.Length > 1)
+                                                {
+                                                    addressData = address[1];
+                                                }
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string[] address = layoutField.Data[row].Split(SEPARATOR, StringSplitOptions.None);
+
+                                        switch (layoutField.Title)
+                                        {
+                                            case "RUA":
+                                                if (address.Length > 0)
+                                                {
+                                                    addressData = address[0];
+                                                }
+                                                break;
+                                            case "NUMERO":
+                                                if (address.Length > 1)
+                                                {
+                                                    addressData = address[1];
+                                                }
+                                                break;
+                                            case "COMPLEMENTO":
+                                                if (address.Length == 6)
+                                                {
+                                                    addressData = address[2];
+                                                }
+                                                break;
+                                            case "BAIRRO":
+                                                if (address.Length == 6)
+                                                {
+                                                    addressData = address[3];
+                                                }
+                                                else if(address.Length == 5)
+                                                {
+                                                    addressData = address[2];
+                                                }
+                                                break;
+                                            case "ESTADO":
+                                                if (address.Length == 6)
+                                                {
+                                                    addressData = address[5];
+                                                }
+                                                else if (address.Length == 5)
+                                                {
+                                                    addressData = address[4];
+                                                }
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                    newData = ClientLayout.GetTXTData(addressData, layoutField.Size, layoutField.Format);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("ERRO: { ex.Message}");
+                                }
+                            }
+                            else
+                            {
+                                newData = ClientLayout.GetTXTData(layoutField.Data[row], layoutField.Size, layoutField.Format);
+                            }
                         }
                         else
                         {
                             newData = ClientLayout.GetTXTData(System.String.Empty, layoutField.Size, layoutField.Format);
-                        }
-
-                        switch (layoutField.Title)
-                        {
-                            case "TIPO_DE_LINHA":
-                                break;
-                            case "COLIGADA":
-                                break;
-                            case "CLIENTE_FORNECEDOR":
-                                break;
-                            case "PESSOA_FISICA_OU_JURIDICA":
-                                break;
-                            case "CODIGO_DE_MUNICIPIO":
-                                break;
-                            case "CONTRIBUINTE_ISS":
-                                break;
-                            case "OPTANTE_PELO_SIMPLES":
-                                break;
                         }
 
                         dataLine += newData;
@@ -229,9 +319,9 @@
             Console.WriteLine("Salvando arquivo .txt");
 
             // Salvar em um novo arquivo .txt
-            Exporter.WriteTxt("fornecedor", dataLine);
+            Exporter.WriteTxt($"{MAX_ROWS_READ}_fornecedores", dataLine);
 
-            Console.WriteLine("Fim da execução - Clientes");
+            Console.WriteLine("Fim da execução - Fornecedores");
         }
     }
 }
