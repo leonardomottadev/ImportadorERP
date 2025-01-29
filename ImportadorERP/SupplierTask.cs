@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-
-namespace ImportadorERP
+﻿namespace ImportadorERP
 {
     public static class SupplierTask
     {
@@ -12,7 +10,7 @@ namespace ImportadorERP
             Console.WriteLine("Início - Fornecedores");
 
             // Importar dados + cabeçalhos
-            ImportModel importModel = Importer.Import("relatorio_fornecedores.xls", MAX_ROWS_READ);
+            ImportModel importModel = Importer.Import("relatorio_fornecedores.xls", MAX_ROWS_READ + 1);
 
             // obter os campos do layout do cliente
             LayoutFieldData[] layouts = LayoutManager.GetCompleteClientLayout();
@@ -319,7 +317,7 @@ namespace ImportadorERP
             Console.WriteLine("Salvando arquivo .txt");
 
             // Salvar em um novo arquivo .txt
-            Exporter.WriteTxt($"{MAX_ROWS_READ}_fornecedores", dataLine);
+            Exporter.WriteTxt($"{MAX_ROWS_READ}_FORNECEDORES_IBNDT", dataLine);
 
             Console.WriteLine("Fim da execução - Fornecedores");
         }

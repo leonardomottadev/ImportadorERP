@@ -10,7 +10,7 @@
             Console.WriteLine("Início - Clientes");
 
             // Importar dados + cabeçalhos
-            ImportModel importModel = Importer.Import("relatorio_clientes.xlsx", MAX_ROWS_READ);
+            ImportModel importModel = Importer.Import("relatorio_clientes.xlsx", MAX_ROWS_READ + 1);
 
             // obter os campos do layout do cliente
             LayoutFieldData[] layouts = LayoutManager.GetCompleteClientLayout();
