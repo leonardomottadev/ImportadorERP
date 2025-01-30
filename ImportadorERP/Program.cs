@@ -1,6 +1,6 @@
 ﻿using ImportadorERP;
 
-ClientTask.Run();
+//ClientTask.Run();
 
 SupplierTask.Run();
 

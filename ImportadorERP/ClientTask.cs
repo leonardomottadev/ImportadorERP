@@ -3,14 +3,15 @@
     public static class ClientTask
     {
         private static readonly string[] SEPARATOR = [" - "];
-        private static readonly int MAX_ROWS_READ = 10;
+        private static readonly int MAX_ROWS_READ = 0;
 
         public static void Run()
         {
             Console.WriteLine("Início - Clientes");
 
             // Importar dados + cabeçalhos
-            ImportModel importModel = Importer.Import("relatorio_clientes.xlsx", MAX_ROWS_READ + 1);
+            //ImportModel importModel = Importer.Import("relatorio_clientes.xlsx", MAX_ROWS_READ + 1);
+            ImportModel importModel = Importer.Import("relatorio_clientes.xlsx", 0);
 
             // obter os campos do layout do cliente
             LayoutFieldData[] layouts = LayoutManager.GetCompleteClientLayout();
@@ -327,6 +328,7 @@
                         dataLine += newData;
                     }
                     dataLine += Environment.NewLine;
+                    Console.WriteLine($"Linha importada: {row}/{maxDataSize}");
                 }
             }
             catch (Exception ex)

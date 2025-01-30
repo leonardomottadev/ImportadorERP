@@ -3,14 +3,15 @@
     public static class SupplierTask
     {
         private static readonly string[] SEPARATOR = [" - "];
-        private static readonly int MAX_ROWS_READ = 10;
+        private static readonly int MAX_ROWS_READ = 0;
 
         public static void Run()
         {
             Console.WriteLine("Início - Fornecedores");
 
             // Importar dados + cabeçalhos
-            ImportModel importModel = Importer.Import("relatorio_fornecedores.xls", MAX_ROWS_READ + 1);
+            //ImportModel importModel = Importer.Import("relatorio_fornecedores.xls", MAX_ROWS_READ + 1);
+            ImportModel importModel = Importer.Import("relatorio_fornecedores.xls", 0);
 
             // obter os campos do layout do cliente
             LayoutFieldData[] layouts = LayoutManager.GetCompleteClientLayout();
@@ -260,8 +261,11 @@
                             {
                                 try
                                 {
-                                    string[] nome_credor = layoutField.Data[row].Split(SEPARATOR, StringSplitOptions.None);
-                                    newData = ClientLayout.GetTXTData(nome_credor[1], layoutField.Size, layoutField.Format);
+                                    if (layoutField.Data[row] != null) 
+                                    {
+                                        string[] nome_credor = layoutField.Data[row].Split(SEPARATOR, StringSplitOptions.None);
+                                        newData = ClientLayout.GetTXTData(nome_credor[1], layoutField.Size, layoutField.Format);
+                                    }
                                 } 
                                 catch (Exception ex)
                                 {
@@ -275,7 +279,7 @@
                                 {
                                     string addressData = "";
 
-                                    if (layoutField.Data[row].Length < 30)
+                                    if (layoutField.Data[row] != null && layoutField.Data[row].Length < 30)
                                     {
                                         string[] address = layoutField.Data[row].Split(SEPARATOR, StringSplitOptions.None);
 
@@ -293,50 +297,52 @@
                                     }
                                     else
                                     {
-                                        string[] address = layoutField.Data[row].Split(SEPARATOR, StringSplitOptions.None);
+                                        if (layoutField.Data[row] != null) {
+                                            string[] address = layoutField.Data[row].Split(SEPARATOR, StringSplitOptions.None);
 
-                                        switch (layoutField.Title)
-                                        {
-                                            case "RUA":
-                                                if (address.Length > 0)
-                                                {
-                                                    addressData = address[0];
-                                                }
-                                                break;
-                                            case "NUMERO":
-                                                if (address.Length > 1)
-                                                {
-                                                    addressData = address[1];
-                                                }
-                                                break;
-                                            case "COMPLEMENTO":
-                                                if (address.Length == 6)
-                                                {
-                                                    addressData = address[2];
-                                                }
-                                                break;
-                                            case "BAIRRO":
-                                                if (address.Length == 6)
-                                                {
-                                                    addressData = address[3];
-                                                }
-                                                else if(address.Length == 5)
-                                                {
-                                                    addressData = address[2];
-                                                }
-                                                break;
-                                            case "ESTADO":
-                                                if (address.Length == 6)
-                                                {
-                                                    addressData = address[5];
-                                                }
-                                                else if (address.Length == 5)
-                                                {
-                                                    addressData = address[4];
-                                                }
-                                                break;
-                                            default:
-                                                break;
+                                            switch (layoutField.Title)
+                                            {
+                                                case "RUA":
+                                                    if (address.Length > 0)
+                                                    {
+                                                        addressData = address[0];
+                                                    }
+                                                    break;
+                                                case "NUMERO":
+                                                    if (address.Length > 1)
+                                                    {
+                                                        addressData = address[1];
+                                                    }
+                                                    break;
+                                                case "COMPLEMENTO":
+                                                    if (address.Length == 6)
+                                                    {
+                                                        addressData = address[2];
+                                                    }
+                                                    break;
+                                                case "BAIRRO":
+                                                    if (address.Length == 6)
+                                                    {
+                                                        addressData = address[3];
+                                                    }
+                                                    else if (address.Length == 5)
+                                                    {
+                                                        addressData = address[2];
+                                                    }
+                                                    break;
+                                                case "ESTADO":
+                                                    if (address.Length == 6)
+                                                    {
+                                                        addressData = address[5];
+                                                    }
+                                                    else if (address.Length == 5)
+                                                    {
+                                                        addressData = address[4];
+                                                    }
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
                                         }
                                     }
                                     newData = ClientLayout.GetTXTData(addressData, layoutField.Size, layoutField.Format);
@@ -359,6 +365,7 @@
                         dataLine += newData;
                     }
                     dataLine += Environment.NewLine;
+                    Console.WriteLine($"Linha importada: {row}/{maxDataSize}");
                 }
             }
             catch (Exception ex)
