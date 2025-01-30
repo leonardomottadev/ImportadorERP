@@ -3,7 +3,7 @@
     public static class SupplierTask
     {
         private static readonly string[] SEPARATOR = [" - "];
-        private static readonly int MAX_ROWS_READ = 20;
+        private static readonly int MAX_ROWS_READ = 10;
 
         public static void Run()
         {

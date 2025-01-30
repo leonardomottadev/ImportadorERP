@@ -465,6 +465,10 @@ namespace ImportadorERP
                 // Data = Campo alfanumérico, no formato DD/MM/AAAA ou DDMMAAAA.
                 case "Data":
                     txtData = new string(' ', size);
+                    //if(data == "")
+                    //{
+                    //    txtData = "01/01/2025";
+                    //}
                     break;
                 // NU = Não Utilizado, preencher com espaços.
                 case "NU":

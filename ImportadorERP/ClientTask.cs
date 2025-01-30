@@ -3,7 +3,7 @@
     public static class ClientTask
     {
         private static readonly string[] SEPARATOR = [" - "];
-        private static readonly int MAX_ROWS_READ = 20;
+        private static readonly int MAX_ROWS_READ = 10;
 
         public static void Run()
         {
@@ -197,9 +197,44 @@
                         {
                             newData = "00001";
                         }
-                        else if(layoutField.Title == "PESSOA_FISICA_OU_JURIDICA")
+                        else if(layoutField.Title == "TIPO_DE_CLIENTE")
+                        {
+                            string tipo_de_cliente = layoutField.Data[row];
+
+                            //switch(tipo_de_cliente)
+                            //{
+                            //    default:
+                            //        break;
+                            //}
+                            newData = ClientLayout.GetTXTData("00001", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "PESSOA_FISICA_OU_JURIDICA")
                         {
                             newData = "J";
+                        }
+                        else if (layoutField.Title == "ATIVO")
+                        {
+                            newData = ClientLayout.GetTXTData("00001", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "REGIME_ISS")
+                        {
+                            newData = ClientLayout.GetTXTData("N", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "PAIS" || layoutField.Title == "PAIS_DE_PAGAMENTO" || layoutField.Title == "PAIS_DE_ENTREGA")
+                        {
+                            newData = ClientLayout.GetTXTData("Brasil", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "ID_DO_PAIS"|| layoutField.Title == "ID_DO_PAIS_PAGAMENTO" || layoutField.Title == "ID_DO_PAIS_ENTREGA")
+                        {
+                            newData = ClientLayout.GetTXTData("001", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "TIPO_DE_BAIRRO" || layoutField.Title == "TIPO_DE_BAIRRO_PAGAMENTO" || layoutField.Title == "TIPO_DE_BAIRRO_ENTREGA")
+                        {
+                            newData = ClientLayout.GetTXTData("00001", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "TIPO_DE_RUA" || layoutField.Title == "TIPO_DE_RUA_PAGAMENTO" || layoutField.Title == "TIPO_DE_RUA_ENTREGA")
+                        {
+                            newData = ClientLayout.GetTXTData("00001", layoutField.Size, layoutField.Format);
                         }
                         else if (layoutField.Data != null && layoutField.Data.Length >= row)
                         {
@@ -222,7 +257,7 @@
             Console.WriteLine("Salvando arquivo .txt");
 
             // Salvar em um novo arquivo .txt
-            Exporter.WriteTxt($"{MAX_ROWS_READ}_clientes", dataLine);
+            Exporter.WriteTxt($"{MAX_ROWS_READ}_CLIENTES_IBNDT", dataLine);
 
             Console.WriteLine("Fim da execução - Clientes");
         }
