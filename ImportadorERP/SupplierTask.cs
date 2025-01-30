@@ -128,7 +128,7 @@
                 ( "NAO_UTILIZADO_22", "" ),
                 ( "CEI", "" ),
                 ( "OPTANTE_PELO_SIMPLES", "" ),
-                ( "TIPO_DE_RUA", "" ),
+                ( "TIPO_DE_RUA", "Endereço" ),
                 ( "TIPO_DE_BAIRRO", "" ),
                 ( "REGIME_ISS", "" ),
                 ( "RETENCAO_ISS", "" ),
@@ -200,7 +200,59 @@
                         else if (layoutField.Title == "PESSOA_FISICA_OU_JURIDICA")
                         {
                             newData = "J";
-                        }                        
+                        }
+                        else if (layoutField.Title == "ATIVO")
+                        {
+                            newData = ClientLayout.GetTXTData("00001", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "REGIME_ISS")
+                        {
+                            newData = ClientLayout.GetTXTData("N", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "PAIS" || layoutField.Title == "PAIS_DE_PAGAMENTO" || layoutField.Title == "PAIS_DE_ENTREGA")
+                        {
+                            newData = ClientLayout.GetTXTData("Brasil", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "ID_DO_PAIS" || layoutField.Title == "ID_DO_PAIS_PAGAMENTO" || layoutField.Title == "ID_DO_PAIS_ENTREGA")
+                        {
+                            newData = ClientLayout.GetTXTData("001", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "TIPO_DE_BAIRRO" || layoutField.Title == "TIPO_DE_BAIRRO_PAGAMENTO" || layoutField.Title == "TIPO_DE_BAIRRO_ENTREGA")
+                        {
+                            newData = ClientLayout.GetTXTData("00001", layoutField.Size, layoutField.Format);
+                        }
+                        else if (layoutField.Title == "TIPO_DE_RUA" || layoutField.Title == "TIPO_DE_RUA_PAGAMENTO" || layoutField.Title == "TIPO_DE_RUA_ENTREGA")
+                        {
+                            string tipo_rua = "00001";
+                            string tp_rua;
+
+                            if (layoutField.Data != null && layoutField.Data.Length >= row)
+                            {
+                                tp_rua = layoutField.Data[row];
+                                if (tp_rua == null)
+                                {
+                                    tp_rua = "";
+                                }
+
+                                if (tp_rua.IndexOf("alameda", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    tipo_rua = "00004";
+                                }
+                                else if (tp_rua.IndexOf("avenida", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    tipo_rua = "00006";
+                                }
+                                else if (tp_rua.IndexOf("rodovia", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    tipo_rua = "00034";
+                                }
+                                else if (tp_rua.IndexOf("est", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    tipo_rua = "00018";
+                                }
+                            }
+                            newData = ClientLayout.GetTXTData(tipo_rua, layoutField.Size, layoutField.Format);
+                        }
                         else if (layoutField.Data != null && layoutField.Data.Length >= row)
                         {
 

@@ -128,7 +128,7 @@
                 ( "NAO_UTILIZADO_22", "" ),
                 ( "CEI", "" ),
                 ( "OPTANTE_PELO_SIMPLES", "" ),
-                ( "TIPO_DE_RUA", "" ),
+                ( "TIPO_DE_RUA", "Endereço comercial" ),
                 ( "TIPO_DE_BAIRRO", "" ),
                 ( "REGIME_ISS", "" ),
                 ( "RETENCAO_ISS", "" ),
@@ -149,9 +149,9 @@
                 ( "ID_DO_PAIS", "" ),
                 ( "ID_DO_PAIS_PAGAMENTO", "" ),
                 ( "ID_DO_PAIS_ENTREGA", "" ),
-                ( "TIPO_DE_RUA_PAGAMENTO", "" ),
+                ( "TIPO_DE_RUA_PAGAMENTO", "Endereço comercial" ),
                 ( "TIPO_DE_BAIRRO_PAGAMENTO", "" ),
-                ( "TIPO_DE_RUA_ENTREGA", "" ),
+                ( "TIPO_DE_RUA_ENTREGA", "Endereço comercial" ),
                 ( "TIPO_DE_BAIRRO_ENTREGA", "" ),
                 ( "INDICADOR_NATUREZA_RETENCAO_NA_FONTE", "" )
             };
@@ -197,16 +197,68 @@
                         {
                             newData = "00001";
                         }
-                        else if(layoutField.Title == "TIPO_DE_CLIENTE")
+                        else if (layoutField.Title == "TIPO_DE_CLIENTE")
                         {
                             string tipo_de_cliente = layoutField.Data[row];
+                            string cliente = "00001";
 
-                            //switch(tipo_de_cliente)
-                            //{
-                            //    default:
-                            //        break;
-                            //}
-                            newData = ClientLayout.GetTXTData("00001", layoutField.Size, layoutField.Format);
+                            switch (tipo_de_cliente)
+                            {
+                                case "Alimentício":
+                                    cliente = "00028";
+                                    break;
+                                case "Celulose":
+                                    cliente = "00029";
+                                    break;
+                                case "Cimenteira":
+                                    cliente = "00030";
+                                    break;
+                                case "Energia":
+                                    cliente = "00031";
+                                    break;
+                                case "Exploração Petróleo":
+                                    cliente = "00032";
+                                    break;
+                                case "Mineração":
+                                    cliente = "00033";
+                                    break;
+                                case "Naval":
+                                    cliente = "00034";
+                                    break;
+                                case "Outros":
+                                    cliente = "00035";
+                                    break;
+                                case "Petroquímico":
+                                    cliente = "00036";
+                                    break;
+                                case "Portuário":
+                                    cliente = "00037";
+                                    break;
+                                case "Prestador de serviço":
+                                    cliente = "00038";
+                                    break;
+                                case "Quimico":
+                                    cliente = "00039";
+                                    break;
+                                case "Químico":
+                                    cliente = "00039";
+                                    break;
+                                case "Refino de Petróleo":
+                                    cliente = "00040";
+                                    break;
+                                case "Siderúrgico":
+                                    cliente = "00041";
+                                    break;
+                                case "Sucroenergético":
+                                    cliente = "00042";
+                                    break;
+                                case "Órgão publico":
+                                    cliente = "00043";
+                                    break;
+                                default:
+                                    break;
+                            }
+                            newData = ClientLayout.GetTXTData(cliente, layoutField.Size, layoutField.Format);
                         }
                         else if (layoutField.Title == "PESSOA_FISICA_OU_JURIDICA")
                         {
@@ -224,7 +276,7 @@
                         {
                             newData = ClientLayout.GetTXTData("Brasil", layoutField.Size, layoutField.Format);
                         }
-                        else if (layoutField.Title == "ID_DO_PAIS"|| layoutField.Title == "ID_DO_PAIS_PAGAMENTO" || layoutField.Title == "ID_DO_PAIS_ENTREGA")
+                        else if (layoutField.Title == "ID_DO_PAIS" || layoutField.Title == "ID_DO_PAIS_PAGAMENTO" || layoutField.Title == "ID_DO_PAIS_ENTREGA")
                         {
                             newData = ClientLayout.GetTXTData("001", layoutField.Size, layoutField.Format);
                         }
@@ -234,7 +286,35 @@
                         }
                         else if (layoutField.Title == "TIPO_DE_RUA" || layoutField.Title == "TIPO_DE_RUA_PAGAMENTO" || layoutField.Title == "TIPO_DE_RUA_ENTREGA")
                         {
-                            newData = ClientLayout.GetTXTData("00001", layoutField.Size, layoutField.Format);
+                            string tipo_rua = "00001";
+                            string tp_rua;
+
+                            if (layoutField.Data != null && layoutField.Data.Length >= row)
+                            {
+                                tp_rua = layoutField.Data[row];
+                                if(tp_rua == null)
+                                {
+                                    tp_rua = "";
+                                }
+
+                                if (tp_rua.IndexOf("alameda", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    tipo_rua = "00004";
+                                }
+                                else if (tp_rua.IndexOf("avenida", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    tipo_rua = "00006";
+                                }
+                                else if(tp_rua.IndexOf("rodovia", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    tipo_rua = "00034";
+                                }
+                                else if(tp_rua.IndexOf("est", StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    tipo_rua = "00018";
+                                }
+                            }
+                            newData = ClientLayout.GetTXTData(tipo_rua, layoutField.Size, layoutField.Format);
                         }
                         else if (layoutField.Data != null && layoutField.Data.Length >= row)
                         {

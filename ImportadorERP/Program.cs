@@ -2,6 +2,6 @@
 
 ClientTask.Run();
 
-//SupplierTask.Run();
+SupplierTask.Run();
 
 Console.ReadKey();
