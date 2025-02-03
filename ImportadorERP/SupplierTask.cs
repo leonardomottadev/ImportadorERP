@@ -87,7 +87,7 @@
                 ( "FAX_DEDICADO", "" ),
                 ( "NAO_UTILIZADO_18", "" ),
                 ( "INSCRICAO_MUNICIPAL", "" ),
-                ( "PESSOA_FISICA_OU_JURIDICA", "" ),
+                ( "PESSOA_FISICA_OU_JURIDICA", "CNPJ/CPF" ),
                 ( "CONTATO_DE_PAGAMENTO", "" ),
                 ( "CONTATO_DE_ENTREGA", "" ),
                 ( "PAIS", "" ),
@@ -201,6 +201,14 @@
                         else if (layoutField.Title == "PESSOA_FISICA_OU_JURIDICA")
                         {
                             newData = "J";
+                            if (layoutField.Data != null && layoutField.Data.Length >= row)
+                            {
+                                string id = layoutField.Data[row];
+                                if (id != null && id.Length == 14)
+                                {
+                                    newData = "F";
+                                }
+                            }
                         }
                         else if (layoutField.Title == "ATIVO")
                         {
